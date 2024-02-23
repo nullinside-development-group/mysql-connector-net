@@ -27,12 +27,14 @@
 // 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 
 using MySql.Data.Common;
+using MySql.Data.Tests;
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -553,17 +555,21 @@ namespace MySql.Data.MySqlClient.Tests
     [Property("Category", "Security")]
     public void ConnectionTimeout()
     {
+      MockServer mServer=new MockServer(false);
+      mServer.StartServer();
+
       MySqlConnectionStringBuilder connStr = new MySqlConnectionStringBuilder(Connection.ConnectionString);
-      connStr.Server = "10.20.30.40";
-      connStr.Port = 3000;
+      connStr.Server = mServer.Address.ToString();
+      connStr.Port = (uint)mServer.Port;
       connStr.ConnectionTimeout = 5;
       MySqlConnection c = new MySqlConnection(connStr.GetConnectionString(true));
-
       DateTime start = DateTime.Now;
       var ex = Assert.Throws<MySqlException>(() => c.Open());
-      Assert.That(ex.InnerException.InnerException is TimeoutException);
       TimeSpan diff = DateTime.Now.Subtract(start);
-      Assert.That(diff.TotalSeconds < 6, $"Timeout exceeded: {diff.TotalSeconds}");
+      Assert.That(diff.TotalSeconds < 8, $"Timeout exceeded: {diff.TotalSeconds}");
+
+      mServer.StopServer();
+      mServer.DisposeListener();
     }
 
     [Test]

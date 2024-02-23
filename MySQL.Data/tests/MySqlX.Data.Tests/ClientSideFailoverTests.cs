@@ -466,7 +466,6 @@ namespace MySqlX.Data.Tests
     {
       Assume.That(session.Version.isAtLeast(5, 7, 0), "This test is for MySql 5.7 or higher");
 
-      var connectionTimeout = 1;
       MySqlXConnectionStringBuilder sb = new MySqlXConnectionStringBuilder(ConnectionString);
 
       // Automatically set priority if no priority is given.
@@ -479,8 +478,7 @@ namespace MySqlX.Data.Tests
       }
 
       using (var session1 = MySQLX.GetSession("server=" + hostList + ";port=" + sb.Port + ";uid=" +
-                                              sb.UserID + ";password=" + sb.Password + ";connect-timeout=" +
-                                              connectionTimeout + ";ssl-mode=Required"))
+                                              sb.UserID + ";password=" + sb.Password + ";connect-timeout=1000;ssl-mode=Required"))
       {
         Assert.That(session1.InternalSession.SessionState, Is.EqualTo(SessionState.Open));
         var schema = session1.GetSchema("test");

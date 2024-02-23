@@ -116,8 +116,7 @@ namespace MySql.Data.Common
           }
           if (IsTimeoutException(socketException))
           {
-            return;
-            //throw new TimeoutException(socketException.Message, e);
+            throw new TimeoutException(socketException.Message, e);
           }
         }
         currentException = currentException.InnerException;
@@ -137,16 +136,30 @@ namespace MySql.Data.Common
       {
         try
         {
+          //if (execAsync)
+          //  return await base.ReadAsync(buffer, offset, count, cancellationToken).ConfigureAwait(false);
+          //else
+          //  return base.Read(buffer, offset, count);
+
           if (execAsync)
-            return await base.ReadAsync(buffer, offset, count, cancellationToken).ConfigureAwait(false);
+          {
+            int readasync= await base.ReadAsync(buffer, offset, count, cancellationToken).ConfigureAwait(false);
+            _socket.ReceiveTimeout = 0;
+            return readasync;
+          }
           else
-            return base.Read(buffer, offset, count);
+          {
+            int read = base.Read(buffer, offset, count);
+            _socket.ReceiveTimeout = 0;
+            return read;
+          }
         }
         catch (Exception e)
         {
           exception = e;
           HandleOrRethrowException(e);
         }
+        
       }
       while (++retry < MaxRetryCount);
       if (exception.GetBaseException() is SocketException
@@ -295,6 +308,9 @@ namespace MySql.Data.Common
       Socket socket = unix ?
           new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.IP) :
           new Socket(ip.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+
+      if (connectionTimeout > 0)
+        socket.ReceiveTimeout = (int)connectionTimeout;
 
       socket.NoDelay = true;
 

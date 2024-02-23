@@ -1127,7 +1127,7 @@ namespace MySqlX.Data.Tests
       mysqlx0.Password = session.Settings.Password;
       mysqlx0.CharacterSet = "utf8mb4";
       mysqlx0.SslMode = MySqlSslMode.Required;
-      mysqlx0.ConnectTimeout = 10;
+      mysqlx0.ConnectTimeout = 1000;
       mysqlx0.Keepalive = 10;
       mysqlx0.CertificateFile = sslCa;
       mysqlx0.CertificatePassword = sslCertificatePassword;
