@@ -181,7 +181,12 @@ namespace MySql.Data.MySqlClient
           //long originalLength = packet.Length - 4;
 
           // and attempt to stream the next command
-          string text = ResolvedCommandText;
+          string text = "";
+          if (Connection.driver.Settings.RewriteBatchedStatements)
+            text = batchedCmd.BatchableCommandText;
+          else
+            text = ResolvedCommandText;
+
           if (text.StartsWith("(", StringComparison.Ordinal))
             await packet.WriteStringNoNullAsync(", ", execAsync).ConfigureAwait(false);
           else

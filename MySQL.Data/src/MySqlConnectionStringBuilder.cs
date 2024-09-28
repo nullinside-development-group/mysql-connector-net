@@ -211,6 +211,7 @@ namespace MySql.Data.MySqlClient
         (msb, sender, value) => { msb.SetValue("exceptioninterceptors", value); }, (msb, sender) => msb.ExceptionInterceptors));
       Options.Add(new MySqlConnectionStringOption("commandinterceptors", "command interceptors", typeof(string), null, false,
         (msb, sender, value) => { msb.SetValue("commandinterceptors", value); }, (msb, sender) => msb.CommandInterceptors));
+      Options.Add(new MySqlConnectionStringOption("rewritebatchedstatements", null, typeof(bool), false, false));
 
       #endregion
 
@@ -862,6 +863,18 @@ namespace MySql.Data.MySqlClient
     {
       get { return (string)values["commandinterceptors"]; }
       set { SetValue("commandinterceptors", value); }
+    }
+
+    /// <summary>
+    /// Gets or sets a boolean indicating if this connection should rewrite batched statements as one block.
+    /// </summary>
+    [Category("Advanced")]
+    [DisplayName("Rewrite Batched Statements")]
+    [Description("Indicates if this connection should rewrite batched statements as one block.")]
+    public bool RewriteBatchedStatements
+    {
+      get { return (bool)values["rewritebatchedstatements"]; }
+      set { SetValue("rewritebatchedstatements", value); }
     }
 
     /// <summary>

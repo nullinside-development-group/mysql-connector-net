@@ -31,6 +31,7 @@ using NUnit.Framework.Legacy;
 using System;
 using System.Data;
 using System.Data.Common;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -720,6 +721,57 @@ namespace MySql.Data.MySqlClient.Tests
       Assert.That(dt.Rows.Count, Is.EqualTo(numRows));
       for (int i = 0; i < numRows; i++)
         Assert.That(dt.Rows[i]["id"], Is.EqualTo(i));
+    }
+
+    /// <summary>
+    /// Bug#35240186 Contribution: Run inserts in batch command as one block
+    /// </summary>
+    [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void TestBatchingInsertsAllRowsInOneGo(bool rewriteStatements)
+    {
+      ExecuteSQL("CREATE TABLE Test (id INT AUTO_INCREMENT, name VARCHAR(20), PRIMARY KEY(id))");
+      ExecuteSQL("INSERT INTO Test VALUES (1, 'Test 1')");
+      using MySqlConnection conn = new MySqlConnection(Connection.ConnectionString + ";rewritebatchedstatements=" + rewriteStatements.ToString() + ";");
+      {
+        conn.Open();
+        bool testing = true;
+        Console.WriteLine(testing.ToString());
+        MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", conn);
+        MySqlCommand ins = new MySqlCommand("INSERT INTO Test (id, name) VALUES (?p1, ?p2)", conn);
+        da.InsertCommand = ins;
+        ins.UpdatedRowSource = UpdateRowSource.None;
+        ins.Parameters.Add("?p1", MySqlDbType.Int32).SourceColumn = "id";
+        ins.Parameters.Add("?p2", MySqlDbType.VarChar, 20).SourceColumn = "name";
+
+        DataTable dt = new DataTable();
+        da.Fill(dt);
+
+        for (int i = 1; i <= 3; i++)
+        {
+          DataRow row = dt.NewRow();
+          row["id"] = DBNull.Value;
+          row["name"] = "name " + i;
+          dt.Rows.Add(row);
+        }
+
+        da.UpdateBatchSize = 0;
+        da.Update(dt);
+        MySqlCommand lsid = new MySqlCommand("SELECT LAST_INSERT_ID();", conn);
+        var lastInsertedId = (ulong)lsid.ExecuteScalar();
+
+        if (rewriteStatements)
+        {
+          //The batched statements are rewritten to be processed all together, that is why the last inserted ID is 2
+          Assert.That(lastInsertedId, Is.EqualTo(2));
+        }
+        else
+        {
+          //The batched statements are not rewritten, and are processed one by one, in this case the last inserted ID is 4
+          Assert.That(lastInsertedId, Is.EqualTo(4));
+        }
+      }
     }
 
     [Test]
