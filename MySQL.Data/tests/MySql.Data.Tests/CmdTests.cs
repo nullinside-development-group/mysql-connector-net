@@ -179,6 +179,17 @@ namespace MySql.Data.MySqlClient.Tests
       Assert.That(Convert.ToInt32(after_cnt), Is.EqualTo(0));
     }
 
+    #if !NETFRAMEWORK
+    [Test]
+    public void ActivityTest()
+    {
+      using var cmd = Connection.CreateCommand();
+      cmd.CommandText = "SELECT 1;";
+      using var _ = TestListener((activity) => Assert.AreEqual("u-cmdtests-0", activity.GetTagItem("db.user")));
+      cmd.ExecuteNonQuery();
+    }
+    #endif
+
     [Test]
     public void CtorTest()
     {

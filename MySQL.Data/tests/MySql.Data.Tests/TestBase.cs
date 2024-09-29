@@ -184,6 +184,28 @@ namespace MySql.Data.MySqlClient.Tests
     #endregion
 
     #region Public Methods
+
+    #if !NETFRAMEWORK
+    public static ActivityListener TestListener(Action<Activity> activityCheck)
+    {
+      ActivityListener activity_listener = new ActivityListener
+      {
+        ShouldListenTo = source =>
+        {
+          return source.Name == "connector-net";
+        },
+        ActivityStopped = activity =>
+        {
+          if (activityCheck != null)
+            activityCheck(activity);
+        },
+        Sample = (ref ActivityCreationOptions<ActivityContext> options) => ActivitySamplingResult.AllData,
+      };
+      ActivitySource.AddActivityListener(activity_listener);
+      return activity_listener;
+    }
+    #endif
+
     public MySqlConnection GetConnection(bool asRoot = false)
     {
       var s = asRoot ? RootSettings : Settings;
