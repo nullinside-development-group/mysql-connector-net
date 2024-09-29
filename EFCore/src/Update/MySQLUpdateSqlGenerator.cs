@@ -50,13 +50,14 @@ namespace MySql.EntityFrameworkCore
   ///     This service cannot depend on services registered as <see cref="ServiceLifetime.Scoped" />.
   ///   </para>
   /// </summary>
-  internal class MySQLUpdateSqlGenerator : UpdateSqlGenerator, IMySQLUpdateSqlGenerator
+  internal class MySQLUpdateSqlGenerator : UpdateAndSelectSqlGenerator, IMySQLUpdateSqlGenerator
   {
     public MySQLUpdateSqlGenerator([NotNull] UpdateSqlGeneratorDependencies dependencies)
       : base(dependencies)
     {
     }
 
+#if NET8_0_OR_GREATER
     public virtual ResultSetMapping AppendBulkInsertOperation(
       StringBuilder commandStringBuilder,
       IReadOnlyList<IReadOnlyModificationCommand> modificationCommands,
@@ -73,7 +74,7 @@ namespace MySql.EntityFrameworkCore
       || !o.IsRead
       || o.Property?.GetValueGenerationStrategy(table) == MySQLValueGenerationStrategy.IdentityColumn))
       {
-        return AppendInsertOperation(commandStringBuilder, firstCommand, commandPosition, false, out requiresTransaction);
+        return AppendInsertOperation(commandStringBuilder, firstCommand, commandPosition, out requiresTransaction);
       }
 
       var readOperations = firstCommand.ColumnModifications.Where(o => o.IsRead).ToList();
@@ -114,7 +115,7 @@ namespace MySql.EntityFrameworkCore
 
       foreach (var modification in modificationCommands)
       {
-        AppendInsertOperation(commandStringBuilder, modification, commandPosition, false, out requiresTransaction);
+        AppendInsertOperation(commandStringBuilder, modification, commandPosition, out requiresTransaction);
       }
 
       return ResultSetMapping.LastInResultSet;
@@ -387,7 +388,7 @@ namespace MySql.EntityFrameworkCore
       }
     }
 
-    private void AppendRowsAffectedWhereCondition(StringBuilder commandStringBuilder, int expectedRowsAffected)
+    protected override void AppendRowsAffectedWhereCondition(StringBuilder commandStringBuilder, int expectedRowsAffected)
     {
       Check.NotNull(commandStringBuilder, "commandStringBuilder");
       commandStringBuilder
@@ -402,11 +403,25 @@ namespace MySql.EntityFrameworkCore
     protected virtual bool IsIdentityOperation(IColumnModification modification)
       => modification.IsKey && modification.IsRead;
 
-    private void AppendIdentityWhereCondition(StringBuilder commandStringBuilder, IColumnModification columnModification)
+    protected override void AppendIdentityWhereCondition(StringBuilder commandStringBuilder, IColumnModification columnModification)
     {
       Check.NotNull(columnModification, "columnModification");
       Check.NotNull(commandStringBuilder, "commandStringBuilder");
       commandStringBuilder.AppendFormat("{0} = LAST_INSERT_ID()", SqlGenerationHelper.DelimitIdentifier(columnModification.ColumnName));
     }
+
+    protected override ResultSetMapping AppendSelectAffectedCountCommand(StringBuilder commandStringBuilder, string name, string? schemaName, int commandPosition)
+    {
+      Check.NotNull(commandStringBuilder, "commandStringBuilder");
+      Check.NotEmpty(name, "name");
+
+      commandStringBuilder
+        .Append("SELECT ROW_COUNT()")
+        .Append(SqlGenerationHelper.StatementTerminator).AppendLine()
+        .AppendLine();
+
+      return ResultSetMapping.LastInResultSet;
+    }
+#endif
   }
 }

@@ -3,6 +3,7 @@
 - Removed support for .NET 6 and EFCore 6 (WL16654).
 - Fixed bug Run inserts in batch command as one block (MySQL Bug #110553, Oracle Bug #35240186). Thanks to Sebastian Schwarzhuber for the contribution.
 - Fixed failing tests due to server changes (Oracle Bug #37365939).
+- Fixed bug Fix: MySQLUpdateSqlGenerator to inherit UpdateAndSelectSqlGenerator (MySQL Bug #115020, Oracle Bug #36624158). Thanks to Hikari Fujioka for the contribution.
 
 
 9.1.0
