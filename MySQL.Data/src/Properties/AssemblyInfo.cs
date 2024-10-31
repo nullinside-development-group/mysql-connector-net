@@ -36,7 +36,7 @@ using System.Security;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("MySql.Data")]
-[assembly: AssemblyDescription("MySql.Data.EntityFramework adds support for cross-platform application deployment with the Entity Framework 6.4 version.")]
+[assembly: AssemblyDescription("MySql.Data.MySqlClient .Net Core Class Library.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Oracle Corporation")]
 [assembly: AssemblyProduct("MySQL Connector/NET")]

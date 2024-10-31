@@ -5,7 +5,7 @@
     <Copyright>Copyright © 2023, 2025, Oracle and/or its affiliates.</Copyright>
     <NeutralLanguage>en-US</NeutralLanguage>
     <Version>9.2.0</Version>
-    <Authors>Oracle</Authors>  
+    <Authors>Oracle Corporation</Authors>  
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>MySql.Data.OpenTelemetry</AssemblyName>
     <PackageId>MySql.Data.OpenTelemetry</PackageId>
