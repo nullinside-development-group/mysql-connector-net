@@ -8,7 +8,7 @@
     <Version>9.2.0</Version>
     <Authors>Oracle</Authors>
     <AssemblyName>MySql.Data</AssemblyName>
-    <TargetFrameworks>netstandard2.0;netstandard2.1;net9.0;net6.0;net8.0;</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;netstandard2.1;net9.0;net8.0;</TargetFrameworks>
     <PackageId>MySql.Data</PackageId>
     <PackageTags>MySql;.NET Connector;MySql Connector/NET;netcore;.Net Core;MySql Conector/Net Core;coreclr;C/NET;C/Net Core</PackageTags>
     <PackageReleaseNotes>Review ReleaseNotes.txt for details.</PackageReleaseNotes>

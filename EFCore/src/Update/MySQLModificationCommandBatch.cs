@@ -49,158 +49,14 @@ namespace MySql.EntityFrameworkCore.Update
     private const int DefaultNetworkPacketSizeBytes = 4096;
     private const int MaxScriptLength = 65536 * DefaultNetworkPacketSizeBytes / 2;
     private const int MaxParameterCount = 2100;
-#if NET6_0
-    private const int MaxRowCount = 1000;
-    private int _parameterCount = 1; // Implicit parameter for the command text
-    private readonly int _maxBatchSize;
-    private readonly List<ModificationCommand> _bulkInsertCommands = new List<ModificationCommand>();
-    private int _commandsLeftToLengthCheck = 50;
-#elif NET8_0_OR_GREATER
     private readonly List<IReadOnlyModificationCommand> _pendingBulkInsertCommands = new();
-#endif
+
 
 
     
 
     protected new virtual IMySQLUpdateSqlGenerator UpdateSqlGenerator => (IMySQLUpdateSqlGenerator)base.UpdateSqlGenerator;
 
-#if NET6_0
-    public MySQLModificationCommandBatch(
-    [NotNull] ModificationCommandBatchFactoryDependencies dependencies,
-        int? maxBatchSize)
-        : base(dependencies)
-    {
-      if (maxBatchSize.HasValue
-        && maxBatchSize.Value <= 0)
-      {
-        throw new ArgumentOutOfRangeException(nameof(maxBatchSize), RelationalStrings.InvalidMaxBatchSize(maxBatchSize));
-      }
-
-      _maxBatchSize = Math.Min(maxBatchSize ?? int.MaxValue, MaxRowCount);
-    }
-
-    protected override bool CanAddCommand(IReadOnlyModificationCommand modificationCommand)
-    {
-      if (ModificationCommands.Count >= _maxBatchSize)
-      {
-        return false;
-      }
-
-      var additionalParameterCount = CountParameters(modificationCommand);
-
-      if (_parameterCount + additionalParameterCount >= MaxParameterCount)
-      {
-        return false;
-      }
-
-      _parameterCount += additionalParameterCount;
-      return true;
-    }
-
-    private static int CountParameters(IReadOnlyModificationCommand modificationCommand)
-    {
-      var parameterCount = 0;
-
-      foreach (var columnModification in modificationCommand.ColumnModifications)
-      {
-        if (columnModification.UseCurrentValueParameter)
-        {
-          parameterCount++;
-        }
-
-        if (columnModification.UseOriginalValueParameter)
-        {
-          parameterCount++;
-        }
-      }
-
-      return parameterCount;
-    }
-
-    /// <inheritdoc/>
-    protected override bool IsCommandTextValid()
-    {
-      if (--_commandsLeftToLengthCheck < 0)
-      {
-        var commandTextLength = GetCommandText().Length;
-        if (commandTextLength >= MaxScriptLength)
-        {
-          return false;
-        }
-
-        var averageCommandLength = commandTextLength / ModificationCommands.Count;
-        var expectedAdditionalCommandCapacity = (MaxScriptLength - commandTextLength) / averageCommandLength;
-        _commandsLeftToLengthCheck = Math.Max(1, expectedAdditionalCommandCapacity / 4);
-      }
-
-      return true;
-    }
-
-    /// <inheritdoc/>
-    protected override int GetParameterCount()
-      => _parameterCount;
-
-    /// <inheritdoc/>
-    protected override void ResetCommandText()
-    {
-      base.ResetCommandText();
-      _bulkInsertCommands.Clear();
-    }
-
-    /// <inheritdoc/>
-    protected override string GetCommandText()
-      => base.GetCommandText() + GetBulkInsertCommandText(ModificationCommands.Count);
-
-    private string GetBulkInsertCommandText(int lastIndex)
-    {
-      if (_bulkInsertCommands.Count == 0)
-      {
-        return string.Empty;
-      }
-
-      var stringBuilder = new StringBuilder();
-      var resultSetMapping = UpdateSqlGenerator.AppendBulkInsertOperation(
-        stringBuilder, _bulkInsertCommands, lastIndex - _bulkInsertCommands.Count);
-      for (var i = lastIndex - _bulkInsertCommands.Count; i < lastIndex; i++)
-      {
-        CommandResultSet[i] = resultSetMapping;
-      }
-
-      if (resultSetMapping != ResultSetMapping.NoResultSet)
-      {
-        CommandResultSet[lastIndex - 1] = ResultSetMapping.LastInResultSet;
-      }
-
-      return stringBuilder.ToString();
-    }
-
-    /// <inheritdoc/>
-    protected override void UpdateCachedCommandText(int commandPosition)
-    {
-      var newModificationCommand = ModificationCommands[commandPosition];
-      if (newModificationCommand.EntityState == EntityState.Added)
-      {
-        if (_bulkInsertCommands.Count > 0
-          && !CanBeInsertedInSameStatement(_bulkInsertCommands[0], (ModificationCommand)newModificationCommand))
-        {
-          CachedCommandText.Append(GetBulkInsertCommandText(commandPosition));
-          _bulkInsertCommands.Clear();
-        }
-
-        _bulkInsertCommands.Add((ModificationCommand)newModificationCommand);
-
-        LastCachedCommandIndex = commandPosition;
-      }
-      else
-      {
-        CachedCommandText.Append(GetBulkInsertCommandText(commandPosition));
-        _bulkInsertCommands.Clear();
-
-        base.UpdateCachedCommandText(commandPosition);
-      }
-    }
-
-#elif NET8_0_OR_GREATER
     /// <summary>
     ///   This is an internal API that supports the Entity Framework Core infrastructure and not subject to
     ///   the same compatibility standards as public APIs. It may be changed or removed without notice in
@@ -322,7 +178,6 @@ namespace MySql.EntityFrameworkCore.Update
         throw new DbUpdateException(MySQLStrings.SaveChangesFailed, e.InnerException, e.Entries);
       }
     }
-#endif
 
 
     private static bool CanBeInsertedInSameStatement(

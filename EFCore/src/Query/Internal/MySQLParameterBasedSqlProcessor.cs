@@ -60,20 +60,7 @@ namespace MySql.EntityFrameworkCore.Query.Internal
 #endif
 
     /// <inheritdoc />
-#if NET6_0
-    protected override SelectExpression ProcessSqlNullability(
-      SelectExpression selectExpression, IReadOnlyDictionary<string, object?> parametersValues, out bool canCache)
-    {
-      Check.NotNull(selectExpression, nameof(selectExpression));
-      Check.NotNull(parametersValues, nameof(parametersValues));
-
-      selectExpression = new MySQLSqlNullabilityProcessor(Dependencies, UseRelationalNulls).Process(selectExpression, parametersValues, out canCache);
-
-      selectExpression = (SelectExpression)new MySQLCompatibilityExpressionVisitor(_options).Visit(selectExpression);
-
-      return selectExpression;
-    }
-#elif NET8_0
+#if NET8_0
     protected override Expression ProcessSqlNullability(
       Expression selectExpression, IReadOnlyDictionary<string, object?> parametersValues, out bool canCache)
     {

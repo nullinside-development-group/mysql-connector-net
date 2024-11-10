@@ -10,7 +10,7 @@
     <PackageLicenseExpression>GPL-2.0-only WITH Universal-FOSS-exception-1.0</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <LangVersion>13.0</LangVersion>
-    <TargetFrameworks>net9.0;net6.0;net8.0;</TargetFrameworks>
+    <TargetFrameworks>net9.0;net8.0;</TargetFrameworks>
     <AssemblyName>MySql.EntityFrameworkCore</AssemblyName>
     <PackageId>MySql.EntityFrameworkCore</PackageId>
     <Nullable>enable</Nullable>
@@ -33,11 +33,6 @@
   <PropertyGroup Condition="'$(allow_prerelease)'=='true'">
     <!--<TargetFrameworks>net9.0;$(TargetFrameworks)</TargetFrameworks>-->
   </PropertyGroup>
-  
-  <ItemGroup Condition="'$(TargetFramework)'=='net6.0'">
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.33" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.33" />
-  </ItemGroup>
   
   <ItemGroup Condition="'$(TargetFramework)'=='net8.0'">
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />

@@ -1,5 +1,6 @@
 9.2.0
 - Added support for .NET 9 and EF Core 9 GA versions (WL16638).
+- Removed support for .NET 6 and EFCore 6 (WL16654).
 
 
 9.1.0

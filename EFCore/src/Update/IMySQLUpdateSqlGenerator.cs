@@ -34,15 +34,6 @@ using System.Text;
 
 namespace MySql.EntityFrameworkCore.Update
 {
-#if NET6_0
-  internal interface IMySQLUpdateSqlGenerator : IUpdateSqlGenerator
-  {
-    ResultSetMapping AppendBulkInsertOperation(
-    [NotNull] StringBuilder commandStringBuilder,
-    [NotNull] IReadOnlyList<IReadOnlyModificationCommand> modificationCommands,
-    int commandPosition);
-  }
-#elif NET8_0_OR_GREATER
   /// <summary>
   ///   <para>
   ///     The service lifetime is <see cref="ServiceLifetime.Singleton" />. This means a single instance
@@ -70,6 +61,5 @@ namespace MySql.EntityFrameworkCore.Update
       int commandPosition)
       => AppendBulkInsertOperation(commandStringBuilder, modificationCommands, commandPosition, out _);
   }
-#endif
 
 }

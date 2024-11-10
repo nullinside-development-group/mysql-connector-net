@@ -44,44 +44,7 @@ namespace MySql.EntityFrameworkCore.Migrations.Internal
   
   internal class MySQLMigrationsModelDiffer : MigrationsModelDiffer
   {
-#if NET6_0
-    public MySQLMigrationsModelDiffer(
-          [NotNull] IRelationalTypeMappingSource typeMappingSource,
-          [NotNull] IMigrationsAnnotationProvider migrationsAnnotations,
-          [NotNull] IChangeDetector changeDetector,
-          [NotNull] IUpdateAdapterFactory updateAdapterFactory,
-          [NotNull] CommandBatchPreparerDependencies commandBatchPreparerDependencies)
-          : base(
-            typeMappingSource,
-            migrationsAnnotations,
-            changeDetector,
-            updateAdapterFactory,
-            commandBatchPreparerDependencies)
-    {
-    }
-
-    protected override IEnumerable<MigrationOperation> Add(IColumn target, DiffContext diffContext, bool inline = false)
-    {
-      var _property = target.PropertyMappings.ToArray().FirstOrDefault()!.Property;
-      if (_property.FindTypeMapping() is RelationalTypeMapping storeType)
-      {
-        var valueGenerationStrategy = MySQLValueGenerationStrategyCompatibility.GetValueGenerationStrategy(MigrationsAnnotations.ForRemove(target).ToArray());
-        // Ensure that null will be set for the columns default value, if CURRENT_TIMESTAMP has been required,
-        // or when the store type of the column does not support default values at all.
-        inline = inline ||
-             (storeType.StoreTypeNameBase == "datetime" ||
-              storeType.StoreTypeNameBase == "timestamp") &&
-             (valueGenerationStrategy == MySQLValueGenerationStrategy.IdentityColumn ||
-              valueGenerationStrategy == MySQLValueGenerationStrategy.ComputedColumn) ||
-             storeType.StoreTypeNameBase.Contains("text") ||
-             storeType.StoreTypeNameBase.Contains("blob") ||
-             storeType.StoreTypeNameBase == "geometry" ||
-             storeType.StoreTypeNameBase == "json";
-      }
-      return base.Add(target, diffContext, inline);
-    }
-
-#elif NET8_0
+#if NET8_0
     public MySQLMigrationsModelDiffer(
       [NotNull] IRelationalTypeMappingSource typeMappingSource,
       [NotNull] IMigrationsAnnotationProvider migrationsAnnotations,
