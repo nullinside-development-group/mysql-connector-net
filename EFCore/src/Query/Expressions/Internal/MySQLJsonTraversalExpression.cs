@@ -34,6 +34,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace MySql.EntityFrameworkCore.Query.Expressions.Internal
 {
@@ -42,6 +43,10 @@ namespace MySql.EntityFrameworkCore.Query.Expressions.Internal
   /// </summary>
   internal class MySQLJsonTraversalExpression : SqlExpression, IEquatable<MySQLJsonTraversalExpression>
   {
+
+#if NET9_0
+    private static ConstructorInfo? _quotingConstructor;
+#endif
     /// <summary>
     /// The JSON column.
     /// </summary>
@@ -90,6 +95,15 @@ namespace MySql.EntityFrameworkCore.Query.Expressions.Internal
     protected override Expression VisitChildren(ExpressionVisitor visitor)
     => Update((SqlExpression)visitor.Visit(Expression),
       Path.Select(p => (SqlExpression)visitor.Visit(p)).ToArray());
+
+#if NET9_0
+    public override Expression Quote() => New(
+    _quotingConstructor ??= typeof(MySQLJsonTraversalExpression).GetConstructor([typeof(SqlExpression), typeof(string)])!,
+    Expression.Quote(),
+    Constant(ReturnsText),
+    Constant(Type),
+    RelationalExpressionQuotingUtilities.QuoteTypeMapping(TypeMapping));
+#endif
 
     public virtual MySQLJsonTraversalExpression Update(
     [NotNull] SqlExpression expression,

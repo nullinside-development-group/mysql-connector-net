@@ -34,6 +34,7 @@ using MySql.EntityFrameworkCore.Extensions;
 using MySql.EntityFrameworkCore.Infrastructure.Internal;
 using System;
 using System.Data;
+using System.Data.Common;
 
 namespace MySql.EntityFrameworkCore.Basic.Tests.Utils
 {
@@ -225,21 +226,42 @@ namespace MySql.EntityFrameworkCore.Basic.Tests.Utils
     public override DbContextOptionsBuilder AddProviderOptions(DbContextOptionsBuilder builder)
       => builder.UseMySQL(GetContextConnectionString<MyTestContext>());
 
+#if NET9_0
+    public virtual void Clean(DbContext context)
+      => context.Database.EnsureDeleted();
+#else
     public override void Clean(DbContext context)
       => context.Database.EnsureDeleted();
+#endif
 
-    public static MySQLTestStore Create(string name)
-      => new MySQLTestStore(name);
 
-    public static MySQLTestStore GetOrCreate(string name)
-      => new MySQLTestStore(name);
 
+#if NET9_0
+    private MySQLTestStore(string name, DbConnection connection)
+        : base(name, true, connection)
+    {
+      SslMode = true;
+      connection = new MySqlConnection(RootConnectionString);
+    }
+    public static MySQLTestStore Create(string name, DbConnection connection)
+      => new MySQLTestStore(name, connection);
+
+    public static MySQLTestStore GetOrCreate(string name, DbConnection connection)
+      => new MySQLTestStore(name, connection);
+#else
     private MySQLTestStore(string name)
     : base(name, true)
     {
       SslMode = true;
       Connection = new MySqlConnection(RootConnectionString);
     }
+
+        public static MySQLTestStore Create(string name)
+      => new MySQLTestStore(name);
+
+    public static MySQLTestStore GetOrCreate(string name)
+      => new MySQLTestStore(name);
+#endif
   }
 
   public class MySQLTestStoreFactory : RelationalTestStoreFactory
@@ -250,13 +272,25 @@ namespace MySql.EntityFrameworkCore.Basic.Tests.Utils
     {
     }
 
+#if NET9_0
+    public override TestStore Create(string storeName)
+        => MySQLTestStore.Create(storeName, new MySqlConnection(MySQLTestStore.RootConnectionString));
+
+    public override TestStore GetOrCreate(string storeName)
+        => MySQLTestStore.GetOrCreate(storeName, new MySqlConnection(MySQLTestStore.RootConnectionString));
+#else
     public override TestStore Create(string storeName)
         => MySQLTestStore.Create(storeName);
 
     public override TestStore GetOrCreate(string storeName)
         => MySQLTestStore.GetOrCreate(storeName);
+#endif
+
+
+
 
     public override IServiceCollection AddProviderServices(IServiceCollection serviceCollection)
         => serviceCollection.AddEntityFrameworkMySQL();
+
   }
 }

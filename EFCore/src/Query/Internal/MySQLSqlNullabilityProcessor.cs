@@ -37,6 +37,8 @@ namespace MySql.EntityFrameworkCore.Query.Internal
   {
     private readonly ISqlExpressionFactory _sqlExpressionFactory;
 
+
+#if !NET9_0
     /// <summary>
     /// Creates a new instance of the <see cref="MySQLSqlNullabilityProcessor" />.
     /// </summary>
@@ -47,7 +49,18 @@ namespace MySql.EntityFrameworkCore.Query.Internal
       bool useRelationalNulls)
       : base(dependencies, useRelationalNulls)
       => _sqlExpressionFactory = dependencies.SqlExpressionFactory;
-
+#else
+    /// <summary>
+    /// Creates a new instance of the <see cref="MySQLSqlNullabilityProcessor" />.
+    /// </summary>
+    /// <param name="dependencies">Parameter object containing dependencies for this class.</param>
+    /// <param name="parameters">Parameter object containing parameters for this class.</param>
+    public MySQLSqlNullabilityProcessor(
+  RelationalParameterBasedSqlProcessorDependencies dependencies,
+  RelationalParameterBasedSqlProcessorParameters parameters)
+  : base(dependencies, parameters)
+  => _sqlExpressionFactory = dependencies.SqlExpressionFactory;
+#endif
     /// <inheritdoc />
     protected override SqlExpression VisitCustomSqlExpression(
       SqlExpression sqlExpression, bool allowOptimizedExpansion, out bool nullable)

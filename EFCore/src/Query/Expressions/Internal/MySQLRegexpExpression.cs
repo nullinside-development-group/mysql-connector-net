@@ -31,11 +31,17 @@ using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Microsoft.EntityFrameworkCore.Storage;
 using MySql.EntityFrameworkCore.Utils;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace MySql.EntityFrameworkCore.Query.Expressions.Internal
 {
   internal class MySQLRegexpExpression : SqlExpression
   {
+
+#if NET9_0
+    private static ConstructorInfo? _quotingConstructor;
+#endif
+
     public MySQLRegexpExpression(
     [NotNull] SqlExpression match,
     [NotNull] SqlExpression pattern,
@@ -68,6 +74,15 @@ namespace MySql.EntityFrameworkCore.Query.Expressions.Internal
 
       return Update(match, pattern);
     }
+
+#if NET9_0
+    public override Expression Quote() => New(
+    _quotingConstructor ??= typeof(MySQLMatchExpression).GetConstructor([typeof(SqlExpression), typeof(string)])!,
+    Match.Quote(),
+    Pattern.Quote(),
+    Constant(Type),
+    RelationalExpressionQuotingUtilities.QuoteTypeMapping(TypeMapping));
+#endif
 
     public virtual MySQLRegexpExpression Update(SqlExpression match, SqlExpression pattern)
       => match != Match ||

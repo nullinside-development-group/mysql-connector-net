@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <Description>MySql.EntityFrameworkCore.Migrations.Tests Class Library</Description>
-    <TargetFrameworks>net6.0;net8.0;</TargetFrameworks>
+    <TargetFrameworks>net9.0;net6.0;net8.0;</TargetFrameworks>
     <AssemblyName>MySql.EntityFrameworkCore.Migrations.Tests</AssemblyName>
     <PackageId>MySql.EntityFrameworkCore.Migrations.Tests</PackageId>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
@@ -14,7 +14,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(allow_prerelease)'=='true'">
-    <TargetFrameworks>net9.0;$(TargetFrameworks)</TargetFrameworks>
+    <!--<TargetFrameworks>net9.0;$(TargetFrameworks)</TargetFrameworks>-->
   </PropertyGroup>
 
   <ItemGroup>

@@ -39,6 +39,7 @@ namespace MySql.EntityFrameworkCore.Query.Internal
   {
     private readonly IMySQLOptions _options;
 
+#if !NET9_0
     public MySQLParameterBasedSqlProcessor(
       RelationalParameterBasedSqlProcessorDependencies dependencies,
       bool useRelationalNulls,
@@ -47,6 +48,16 @@ namespace MySql.EntityFrameworkCore.Query.Internal
     {
       _options = options;
     }
+#else
+    public MySQLParameterBasedSqlProcessor(
+      RelationalParameterBasedSqlProcessorDependencies dependencies,
+      RelationalParameterBasedSqlProcessorParameters parameters,
+      IMySQLOptions options)
+      : base(dependencies, parameters)
+    {
+      _options = options;
+    }
+#endif
 
     /// <inheritdoc />
 #if NET6_0
@@ -62,7 +73,7 @@ namespace MySql.EntityFrameworkCore.Query.Internal
 
       return selectExpression;
     }
-#elif NET8_0_OR_GREATER
+#elif NET8_0
     protected override Expression ProcessSqlNullability(
       Expression selectExpression, IReadOnlyDictionary<string, object?> parametersValues, out bool canCache)
     {
@@ -70,6 +81,15 @@ namespace MySql.EntityFrameworkCore.Query.Internal
       Check.NotNull(parametersValues, nameof(parametersValues));
 
       return new MySQLSqlNullabilityProcessor(Dependencies, UseRelationalNulls).Process(selectExpression, parametersValues, out canCache);
+    }
+#elif NET9_0
+    protected override Expression ProcessSqlNullability(
+      Expression selectExpression, IReadOnlyDictionary<string, object?> parametersValues, out bool canCache)
+    {
+      Check.NotNull(selectExpression, nameof(selectExpression));
+      Check.NotNull(parametersValues, nameof(parametersValues));
+
+      return new MySQLSqlNullabilityProcessor(Dependencies, Parameters).Process(selectExpression, parametersValues, out canCache);
     }
 #endif
   }

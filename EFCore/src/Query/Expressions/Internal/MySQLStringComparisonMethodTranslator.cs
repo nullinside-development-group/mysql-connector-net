@@ -281,7 +281,7 @@ namespace MySql.EntityFrameworkCore.Query.Expressions.Internal
       SqlExpression prefix,
       SqlExpression? originalPrefix = null)
     {
-      return _sqlExpressionFactory.AndAlso(
+      return (SqlBinaryExpression)_sqlExpressionFactory.AndAlso(
         _sqlExpressionFactory.Like(
           target,
           _sqlExpressionFactory.ApplyDefaultTypeMapping(_sqlExpressionFactory.Function(

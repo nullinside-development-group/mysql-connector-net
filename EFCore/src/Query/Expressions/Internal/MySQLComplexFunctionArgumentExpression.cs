@@ -33,11 +33,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace MySql.EntityFrameworkCore.Query.Expressions.Internal
 {
   internal class MySQLComplexFunctionArgumentExpression : SqlExpression
   {
+
+#if NET9_0
+    private static ConstructorInfo? _quotingConstructor;
+#endif
+
     /// <summary>
     ///   The arguments parts.
     /// </summary>
@@ -73,6 +79,15 @@ namespace MySql.EntityFrameworkCore.Query.Expressions.Internal
 
       return Update(argumentParts, Delimiter);
     }
+
+#if NET9_0
+    public override Expression Quote() => New(
+    _quotingConstructor ??= typeof(MySQLComplexFunctionArgumentExpression).GetConstructor([typeof(SqlExpression), typeof(string)])!,
+    Constant(ArgumentParts),
+    Constant(Delimiter),
+    Constant(Type),
+    RelationalExpressionQuotingUtilities.QuoteTypeMapping(TypeMapping));
+#endif
 
     public virtual MySQLComplexFunctionArgumentExpression Update(IReadOnlyList<SqlExpression> argumentParts, string delimiter)
         => !argumentParts.SequenceEqual(ArgumentParts)

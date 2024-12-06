@@ -33,11 +33,17 @@ using MySql.EntityFrameworkCore.Extensions;
 using MySql.EntityFrameworkCore.Utils;
 using System;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace MySql.EntityFrameworkCore.Query.Expressions.Internal
 {
   internal class MySQLMatchExpression : SqlExpression
   {
+
+#if NET9_0
+    private static ConstructorInfo? _quotingConstructor;
+#endif
+
     public MySQLMatchExpression(
       SqlExpression match,
       SqlExpression against,
@@ -74,6 +80,16 @@ namespace MySql.EntityFrameworkCore.Query.Expressions.Internal
 
       return Update(match, against);
     }
+
+#if NET9_0
+    public override Expression Quote() => New(
+    _quotingConstructor ??= typeof(MySQLMatchExpression).GetConstructor([typeof(SqlExpression), typeof(string)])!,
+    Match.Quote(),
+    Against.Quote(),
+    Constant(SearchMode),
+    Constant(Type),
+    RelationalExpressionQuotingUtilities.QuoteTypeMapping(TypeMapping));
+#endif
 
     public virtual MySQLMatchExpression Update(SqlExpression match, SqlExpression against)
       => match != Match || against != Against

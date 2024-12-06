@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <Description>MySql.EntityFrameworkCore.Design.Tests Class Library</Description>
-    <TargetFrameworks>net6.0;net8.0;</TargetFrameworks>
+    <TargetFrameworks>net9.0;net6.0;net8.0;</TargetFrameworks>
     <AssemblyName>MySql.EntityFrameworkCore.Design.Tests</AssemblyName>
     <PackageId>MySql.EntityFrameworkCore.Design.Tests</PackageId>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
@@ -14,7 +14,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(allow_prerelease)'=='true'">
-    <TargetFrameworks>net9.0;$(TargetFrameworks)</TargetFrameworks>
+    <!--<TargetFrameworks>net9.0;$(TargetFrameworks)</TargetFrameworks>-->
   </PropertyGroup>
   
   <ItemGroup>
@@ -42,7 +42,7 @@
   </ItemGroup>
   
   <ItemGroup Condition="'$(TargetFramework)'=='net9.0'">
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0-preview.2.24128.5" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
   </ItemGroup>
 
   <ItemGroup>

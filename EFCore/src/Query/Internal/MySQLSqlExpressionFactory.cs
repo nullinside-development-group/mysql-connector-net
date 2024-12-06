@@ -141,11 +141,18 @@ namespace MySql.EntityFrameworkCore.Query.Internal
       string charset,
       string collation)
       => (MySQLCollateExpression)ApplyDefaultTypeMapping(
+#if NET9_0
+        new MySQLCollateExpression(
+          valueExpression,
+          collation)
+#else
         new MySQLCollateExpression(
           valueExpression,
           charset,
           collation,
-          null));
+          null)
+#endif
+          );
 
     public virtual MySQLBinaryExpression MySqlIntegerDivide(
       SqlExpression left,
@@ -287,11 +294,15 @@ namespace MySql.EntityFrameworkCore.Query.Internal
       var inferredTypeMapping = ExpressionExtensions.InferTypeMapping(collateExpression.ValueExpression)
         ?? _typeMappingSource.FindMapping(collateExpression.ValueExpression.Type);
 
+#if NET9_0
+      return new MySQLCollateExpression(collateExpression.ValueExpression, collateExpression.Collation);
+#else
       return new MySQLCollateExpression(
         ApplyTypeMapping(collateExpression.ValueExpression, inferredTypeMapping),
         collateExpression.Charset,
         collateExpression.Collation,
         inferredTypeMapping ?? collateExpression.TypeMapping);
+#endif
     }
 
     private SqlExpression ApplyTypeMappingOnRegexp(MySQLRegexpExpression regexpExpression)

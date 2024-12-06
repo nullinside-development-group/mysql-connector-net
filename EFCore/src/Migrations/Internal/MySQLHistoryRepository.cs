@@ -27,12 +27,15 @@
 // 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using MySql.EntityFrameworkCore.Utils;
 using System;
 using System.Text;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MySql.EntityFrameworkCore.Migrations.Internal
 {
@@ -50,7 +53,89 @@ namespace MySql.EntityFrameworkCore.Migrations.Internal
       : base(dependencies)
     {
     }
+#if NET9_0
+    public override LockReleaseBehavior LockReleaseBehavior => LockReleaseBehavior.Connection;
 
+    public override IMigrationsDatabaseLock AcquireDatabaseLock()
+    {
+      Dependencies.MigrationsLogger.AcquiringMigrationLock();
+
+      var dbLock = CreateMigrationDatabaseLock();
+      int result;
+      try
+      {
+        result = (int)CreateGetLockCommand().ExecuteScalar(CreateRelationalCommandParameters())!;
+      }
+      catch
+      {
+        try
+        {
+          dbLock.Dispose();
+        }
+        catch
+        {
+        }
+
+        throw;
+      }
+
+      return result < 0
+          ? throw new TimeoutException()
+          : dbLock;
+    }
+
+    /// <summary>
+    ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
+    ///     the same compatibility standards as public APIs. It may be changed or removed without notice in
+    ///     any release. You should only use it directly in your code with extreme caution and knowing that
+    ///     doing so can result in application failures when updating to a new Entity Framework Core release.
+    /// </summary>
+    public override async Task<IMigrationsDatabaseLock> AcquireDatabaseLockAsync(CancellationToken cancellationToken = default)
+    {
+      Dependencies.MigrationsLogger.AcquiringMigrationLock();
+
+      var dbLock = CreateMigrationDatabaseLock();
+      int result;
+      try
+      {
+        result = (int)(await CreateGetLockCommand().ExecuteScalarAsync(CreateRelationalCommandParameters(), cancellationToken)
+            .ConfigureAwait(false))!;
+      }
+      catch
+      {
+        try
+        {
+          await dbLock.DisposeAsync().ConfigureAwait(false);
+        }
+        catch
+        {
+        }
+
+        throw;
+      }
+
+      return result < 0
+          ? throw new TimeoutException()
+          : dbLock;
+    }
+
+    private IRelationalCommand CreateGetLockCommand()
+        => Dependencies.RawSqlCommandBuilder.Build("DECLARE @result int;EXEC @result = sp_getapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session', @LockMode = 'Exclusive';SELECT @result", []).RelationalCommand;
+
+    private MySQLMigrationDatabaseLock CreateMigrationDatabaseLock()
+    => new(
+        Dependencies.RawSqlCommandBuilder.Build("DECLARE @result int;EXEC @result = sp_releaseapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session';SELECT @result"),
+        CreateRelationalCommandParameters(),
+        this);
+
+    private RelationalCommandParameterObject CreateRelationalCommandParameters()
+        => new(
+            Dependencies.Connection,
+            null,
+            null,
+            Dependencies.CurrentContext.Context,
+            Dependencies.CommandLogger, CommandSource.Migrations);
+#endif
     protected override string ExistsSql
     {
       get

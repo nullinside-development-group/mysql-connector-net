@@ -32,6 +32,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using MySql.EntityFrameworkCore.Utils;
 using System;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace MySql.EntityFrameworkCore.Query.Expressions.Internal
 {
@@ -60,6 +61,9 @@ namespace MySql.EntityFrameworkCore.Query.Expressions.Internal
       Right = right;
     }
 
+#if NET9_0
+    private static ConstructorInfo? _quotingConstructor;
+#endif
     public virtual MySQLBinaryExpressionOperatorType OperatorType { get; }
     public virtual SqlExpression Left { get; }
     public virtual SqlExpression Right { get; }
@@ -76,6 +80,18 @@ namespace MySql.EntityFrameworkCore.Query.Expressions.Internal
 
       return Update(left, right);
     }
+
+#if NET9_0
+    /// <inheritdoc />
+    public override Expression Quote() => New(
+      _quotingConstructor ??= typeof(MySQLBinaryExpression).GetConstructor(
+          [typeof(ExpressionType), typeof(SqlExpression), typeof(SqlExpression), typeof(Type), typeof(RelationalTypeMapping)])!,
+      Constant(OperatorType),
+      Left.Quote(),
+      Right.Quote(),
+      Constant(Type),
+      RelationalExpressionQuotingUtilities.QuoteTypeMapping(TypeMapping));
+#endif
 
     public virtual MySQLBinaryExpression Update(SqlExpression left, SqlExpression right)
       => left != Left || right != Right

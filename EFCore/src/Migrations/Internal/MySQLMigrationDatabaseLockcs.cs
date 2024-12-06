@@ -1,4 +1,4 @@
-// Copyright © 2021, 2024, Oracle and/or its affiliates.
+﻿// Copyright © 2024, Oracle and/or its affiliates.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License, version 2.0, as
@@ -26,28 +26,28 @@
 // along with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 
-using Microsoft.EntityFrameworkCore.Query;
-using MySql.EntityFrameworkCore.Infrastructure.Internal;
+using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Storage;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace MySql.EntityFrameworkCore.Query.Internal
+namespace MySql.EntityFrameworkCore.Migrations.Internal
 {
-  internal class MySQLParameterBasedSqlProcessorFactory : IRelationalParameterBasedSqlProcessorFactory
-  {
-    private readonly RelationalParameterBasedSqlProcessorDependencies _dependencies;
-    [NotNull] private readonly IMySQLOptions _options;
-
-    public MySQLParameterBasedSqlProcessorFactory(RelationalParameterBasedSqlProcessorDependencies dependencies, IMySQLOptions options)
-    {
-      _dependencies = dependencies;
-      _options = options;
-    }
-
 #if NET9_0
-    public RelationalParameterBasedSqlProcessor Create(RelationalParameterBasedSqlProcessorParameters parameters)
-      => new MySQLParameterBasedSqlProcessor(_dependencies, parameters, _options);
-#else
-    public virtual RelationalParameterBasedSqlProcessor Create(bool useRelationalNulls)
-      => new MySQLParameterBasedSqlProcessor(_dependencies, useRelationalNulls, _options);
-#endif
+  internal class MySQLMigrationDatabaseLock(
+   IRelationalCommand releaseLockCommand,
+    RelationalCommandParameterObject relationalCommandParameters,
+    IHistoryRepository historyRepository,
+    CancellationToken cancellationToken = default)
+    : IMigrationsDatabaseLock
+  {
+    public virtual IHistoryRepository HistoryRepository => historyRepository;
+
+    public void Dispose()
+      => releaseLockCommand.ExecuteScalar(relationalCommandParameters);
+
+    public async ValueTask DisposeAsync()
+      => await releaseLockCommand.ExecuteScalarAsync(relationalCommandParameters, cancellationToken).ConfigureAwait(false);
   }
+#endif
 }

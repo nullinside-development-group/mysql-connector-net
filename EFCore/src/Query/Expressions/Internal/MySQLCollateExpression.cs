@@ -32,6 +32,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace MySql.EntityFrameworkCore.Query.Expressions.Internal
 {
@@ -44,17 +45,31 @@ namespace MySql.EntityFrameworkCore.Query.Expressions.Internal
     private readonly string _charset;
     private readonly string _collation;
 
+#if NET9_0
+    private static ConstructorInfo? _quotingConstructor;
+#endif
+
+#if NET9_0
+    public MySQLCollateExpression(SqlExpression operand, string collation)
+    : base(operand.Type, operand.TypeMapping)
+    {
+      Operand = operand;
+      Collation = collation;
+    }
+#else
     public MySQLCollateExpression(
-      SqlExpression valueExpression,
-      string charset,
-      string collation,
-      RelationalTypeMapping? typeMapping)
-      : base(typeof(string), typeMapping)
+    SqlExpression valueExpression,
+    string charset,
+    string collation,
+    RelationalTypeMapping? typeMapping)
+    : base(typeof(string), typeMapping)
     {
       _valueExpression = valueExpression;
       _charset = charset;
       _collation = collation;
     }
+#endif
+
 
     /// <summary>
     ///   The expression for which a collation is being specified.
@@ -66,10 +81,21 @@ namespace MySql.EntityFrameworkCore.Query.Expressions.Internal
     /// </summary>
     public virtual string Charset => _charset;
 
+#if NET9_0
+    /// <summary>
+    ///   The expression on which collation is applied.
+    /// </summary>
+    public virtual SqlExpression Operand { get; }
+
+    public virtual string Collation { get; }
+#else
     /// <summary>
     ///   The collation that the string is being converted to.
     /// </summary>
     public virtual string Collation => _collation;
+#endif
+
+
 
     /// <summary>
     ///   Dispatches to the specific visit method for this node type.
@@ -100,11 +126,24 @@ namespace MySql.EntityFrameworkCore.Query.Expressions.Internal
 
     }
 
+#if NET9_0
+    public virtual MySQLCollateExpression Update(SqlExpression operand)
+        => operand != Operand
+            ? new MySQLCollateExpression(operand, Collation)
+            : this;
+    /// <inheritdoc />
+    public override Expression Quote() => New(
+        _quotingConstructor ??= typeof(MySQLCollateExpression).GetConstructor([typeof(SqlExpression), typeof(string)])!,
+        Operand.Quote(),
+        Constant(Collation));
+
+#else
     public virtual MySQLCollateExpression Update(SqlExpression valueExpression)
       => valueExpression != _valueExpression &&
       valueExpression != null
       ? new MySQLCollateExpression(valueExpression, _charset, _collation, TypeMapping)
       : this;
+#endif
 
     /// <summary>
     ///   Tests if this object is considered equal to another.

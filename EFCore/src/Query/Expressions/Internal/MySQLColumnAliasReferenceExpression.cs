@@ -31,6 +31,7 @@ using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace MySql.EntityFrameworkCore.Query.Expressions.Internal
 {
@@ -39,6 +40,10 @@ namespace MySql.EntityFrameworkCore.Query.Expressions.Internal
   /// </summary>
   internal class MySQLColumnAliasReferenceExpression : SqlExpression, IEquatable<MySQLColumnAliasReferenceExpression>
   {
+#if NET9_0
+    private static ConstructorInfo? _quotingConstructor;
+#endif
+
     [NotNull]
     public virtual string Alias { get; }
 
@@ -66,6 +71,15 @@ namespace MySql.EntityFrameworkCore.Query.Expressions.Internal
     expression.Equals(Expression)
     ? this
     : new MySQLColumnAliasReferenceExpression(alias, expression, Type, TypeMapping!);
+
+#if NET9_0
+    public override Expression Quote() => New(
+    _quotingConstructor ??= typeof(MySQLColumnAliasReferenceExpression).GetConstructor([typeof(SqlExpression), typeof(string)])!,
+    Constant(Alias),
+    Expression.Quote(),
+    Constant(Type),
+    RelationalExpressionQuotingUtilities.QuoteTypeMapping(TypeMapping));
+#endif
 
     public override bool Equals(object? obj)
     => Equals(obj as MySQLColumnAliasReferenceExpression);

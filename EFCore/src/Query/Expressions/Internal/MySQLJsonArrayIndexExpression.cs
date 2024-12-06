@@ -31,6 +31,7 @@ using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace MySql.EntityFrameworkCore.Query.Expressions.Internal
 {
@@ -39,6 +40,11 @@ namespace MySql.EntityFrameworkCore.Query.Expressions.Internal
   /// </summary>
   internal class MySQLJsonArrayIndexExpression : SqlExpression, IEquatable<MySQLJsonArrayIndexExpression>
   {
+
+#if NET9_0
+    private static ConstructorInfo? _quotingConstructor;
+#endif
+
     [NotNull]
     public virtual SqlExpression Expression { get; }
 
@@ -53,6 +59,14 @@ namespace MySql.EntityFrameworkCore.Query.Expressions.Internal
 
     protected override Expression VisitChildren(ExpressionVisitor visitor)
       => Update((SqlExpression)visitor.Visit(Expression));
+
+#if NET9_0
+    public override Expression Quote() => New(
+    _quotingConstructor ??= typeof(MySQLJsonArrayIndexExpression).GetConstructor([typeof(SqlExpression), typeof(string)])!,
+    Expression.Quote(),
+    Constant(Type),
+    RelationalExpressionQuotingUtilities.QuoteTypeMapping(TypeMapping));
+#endif
 
     public virtual MySQLJsonArrayIndexExpression Update(
       [NotNull] SqlExpression expression)
