@@ -1463,7 +1463,13 @@ namespace MySqlX.Data.Tests
     {
       string CommandText1 = "SHOW STATUS LIKE '%Ssl_cipher%';";
       string CommandText2 = "show  status like '%Ssl_version%';";
-      string cipher = "ECDHE-RSA-AES256-GCM-SHA384";
+
+      string cipher = "";
+      if (session.Version.isAtLeast(9, 2, 0))
+        cipher = "ECDHE-RSA-AES128-GCM-SHA256";
+      else
+        cipher = "ECDHE-RSA-AES256-GCM-SHA384";
+
       string tls = "TLSv1.2";
       using (var session1 = MySQLX.GetSession(inputString))
       {
@@ -1478,7 +1484,13 @@ namespace MySqlX.Data.Tests
     {
       string CommandText1 = "SHOW STATUS LIKE '%Ssl_cipher%';";
       string CommandText2 = "show  status like '%Ssl_version%';";
-      string cipher = "ECDHE-RSA-AES256-GCM-SHA384";
+
+      string cipher = "";
+      if (session.Version.isAtLeast(9, 2, 0))
+        cipher = "ECDHE-RSA-AES128-GCM-SHA256";
+      else
+        cipher = "ECDHE-RSA-AES256-GCM-SHA384";
+
       string tls = "TLSv1.2";
       using (var session1 = MySQLX.GetSession(inputObject))
       {
