@@ -60,7 +60,7 @@
     <Reference Include="System.Runtime" />
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
-    <PackageReference Include="EntityFramework" Version="6.4.4" />
+    <PackageReference Include="EntityFramework" Version="6.5.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
     <PackageReference Include="NUnit" Version="4.1.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
