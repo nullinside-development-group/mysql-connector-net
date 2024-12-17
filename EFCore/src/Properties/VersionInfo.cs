@@ -40,15 +40,10 @@ using System.Resources;
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
 
-#if NET6_0
-[assembly: AssemblyVersion("6.0.33")]
-[assembly: AssemblyInformationalVersion("6.0.33.0+MySQL9.2.0")]
-[assembly: AssemblyFileVersion("6.0.33.0")]
-[assembly: NeutralResourcesLanguage("en-US")]
-#elif NET8_0
-[assembly: AssemblyVersion("8.0.8")]
-[assembly: AssemblyInformationalVersion("8.0.8.0+MySQL9.2.0")]
-[assembly: AssemblyFileVersion("8.0.8.0")]
+#if NET8_0
+[assembly: AssemblyVersion("8.0.11")]
+[assembly: AssemblyInformationalVersion("8.0.11.0+MySQL9.2.0")]
+[assembly: AssemblyFileVersion("8.0.11.0")]
 [assembly: NeutralResourcesLanguage("en-US")]
 #elif NET9_0
 [assembly: AssemblyVersion("9.0.0")]
