@@ -27,6 +27,7 @@
 // 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using MySql.EntityFrameworkCore.Basic.Tests.Utils;
 using MySql.EntityFrameworkCore.Extensions;
 using System;
@@ -151,8 +152,7 @@ namespace MySql.EntityFrameworkCore.Basic.Tests.DbContextClasses
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
       modelBuilder.Entity<Person>()
-          .Property(p => p.SocialSecurityNumber)
-          .IsConcurrencyToken();
+          .Property(p => p.PersonNumber).IsConcurrencyToken();
     }
   }
 }

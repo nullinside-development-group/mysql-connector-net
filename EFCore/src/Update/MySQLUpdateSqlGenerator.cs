@@ -179,7 +179,7 @@ namespace MySql.EntityFrameworkCore
         return AppendSelectAffectedCommand(commandStringBuilder, name, schema, readOperations, keyOperations);
       }
 
-      return readOperations.Count > 0 ? ResultSetMapping.LastInResultSet : ResultSetMapping.NoResults;
+      return AppendSelectAffectedCountCommand(commandStringBuilder, name, schema, commandPosition);
     }
 
     protected virtual void AppendInsertCommand(
@@ -223,7 +223,7 @@ namespace MySql.EntityFrameworkCore
         return AppendSelectAffectedCommand(commandStringBuilder, name, schema, readOperations, keyOperations);
       }
 
-      return ResultSetMapping.NoResults;
+      return AppendSelectAffectedCountCommand(commandStringBuilder, name, schema, commandPosition);
     }
 
     public override ResultSetMapping AppendDeleteOperation(
@@ -242,7 +242,7 @@ namespace MySql.EntityFrameworkCore
 
       AppendDeleteCommand(commandStringBuilder, name, schema, Array.Empty<IColumnModification>(), conditionOperations);
 
-      return ResultSetMapping.NoResults;
+      return AppendSelectAffectedCountCommand(commandStringBuilder, name, schema,commandPosition);
     }
 
     protected override void AppendValues(
@@ -420,7 +420,7 @@ namespace MySql.EntityFrameworkCore
         .Append(SqlGenerationHelper.StatementTerminator).AppendLine()
         .AppendLine();
 
-      return ResultSetMapping.LastInResultSet;
+      return ResultSetMapping.ResultSetWithRowsAffectedOnly;
     }
 #endif
   }

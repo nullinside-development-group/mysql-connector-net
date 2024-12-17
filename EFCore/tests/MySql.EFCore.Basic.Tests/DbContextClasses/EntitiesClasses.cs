@@ -165,7 +165,7 @@ namespace MySql.EntityFrameworkCore.Basic.Tests.DbContextClasses
     public int PersonId { get; set; }
 
     [ConcurrencyCheck]
-    public string? SocialSecurityNumber { get; set; }
+    public string? PersonNumber { get; set; }
     public string? PhoneNumber { get; set; }
     [ConcurrencyCheck]
     public string? Name { get; set; }

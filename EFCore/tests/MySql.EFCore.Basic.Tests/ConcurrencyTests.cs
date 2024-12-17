@@ -43,8 +43,7 @@ namespace MySql.EntityFrameworkCore.Basic.Tests
     public void CanHandleConcurrencyConflicts()
     {
       var serviceCollection = new ServiceCollection();
-      serviceCollection.AddEntityFrameworkMySQL()
-        .AddDbContext<ConcurrencyTestsContext>();
+      serviceCollection.AddEntityFrameworkMySQL().AddDbContext<ConcurrencyTestsContext>();
 
       var serviceProvider = serviceCollection.BuildServiceProvider();
 
@@ -53,11 +52,11 @@ namespace MySql.EntityFrameworkCore.Basic.Tests
         context.Database.EnsureDeleted();
         context.Database.EnsureCreated();
 
-        context.People.Add(new Person { Name = "Mike Redman", SocialSecurityNumber = "SSS1229932", PhoneNumber = "565665656" });
+        context.People.Add(new Person { Name = "John Doe", PersonNumber = "3333333333", PhoneNumber = "1111111111" });
         context.SaveChanges();
 
         var person = context.People.Single(p => p.PersonId == 1);
-        person.SocialSecurityNumber = "SS15555";
+        person.PersonNumber = "4444444444";
 
         context.Database.ExecuteSqlInterpolated($"UPDATE People SET Name = 'Jane' WHERE PersonId = 1");
 
@@ -101,6 +100,92 @@ namespace MySql.EntityFrameworkCore.Basic.Tests
         {
           context.Database.EnsureDeleted();
         }
+      }
+    }
+
+    [Test]
+    public void CanHandleUpdateConcurrencyConflicts()
+    {
+      var serviceCollection = new ServiceCollection();
+      serviceCollection.AddEntityFrameworkMySQL().AddDbContext<ConcurrencyTestsContext>();
+
+      var serviceProvider = serviceCollection.BuildServiceProvider();
+
+      using (var context = serviceProvider.GetRequiredService<ConcurrencyTestsContext>())
+      {
+        context.Database.EnsureDeleted();
+        context.Database.EnsureCreated();
+
+        context.People.Add(new Person
+        { Name = "John Doe", PersonNumber = "3333333333", PhoneNumber = "1111111111" });
+        context.SaveChanges();
+
+        var updatePerson1 = context.People.Single(p => p.PersonId == 1);
+        var updatePerson2 = context.People.Single(p => p.PersonId == 1);
+
+        updatePerson1.PersonNumber = "2222222222";
+        updatePerson1.PhoneNumber = "555555555";
+
+        context.SaveChanges();
+
+        var item = context.ChangeTracker.Entries().First(x => Object.ReferenceEquals(x.Entity, updatePerson2));
+        item.OriginalValues["PersonNumber"] = "3333333333";
+        updatePerson2.PersonNumber = "44444444";
+        updatePerson2.PhoneNumber = "666666666";
+
+        TestDelegate action = () => context.SaveChanges();
+        Assert.Throws<DbUpdateConcurrencyException>(action);
+      }
+    }
+
+    [Test]
+    public void CanHandleDeleteConcurrencyConflicts()
+    {
+      var serviceCollection = new ServiceCollection();
+      serviceCollection.AddEntityFrameworkMySQL().AddDbContext<ConcurrencyTestsContext>();
+
+      var serviceProvider = serviceCollection.BuildServiceProvider();
+
+      using (var context = serviceProvider.GetRequiredService<ConcurrencyTestsContext>())
+      {
+        context.Database.EnsureDeleted();
+        context.Database.EnsureCreated();
+        context.Remove(new Person { PersonId = 2 , PersonNumber = "88888888" });
+
+        TestDelegate action = () => context.SaveChanges();
+        Assert.Throws<DbUpdateConcurrencyException>(action);
+      }
+    }
+
+    [Test]
+    public void CanHandleInsertConcurrencyConflicts()
+    {
+      var serviceCollection = new ServiceCollection();
+      serviceCollection.AddEntityFrameworkMySQL().AddDbContext<ConcurrencyTestsContext>();
+
+      var serviceProvider = serviceCollection.BuildServiceProvider();
+
+      using (var context = serviceProvider.GetRequiredService<ConcurrencyTestsContext>())
+      {
+        context.Database.EnsureDeleted();
+        context.Database.EnsureCreated();
+        context.People.Add(new Person
+        { Name = "John Doe", PersonNumber = "3333333333", PhoneNumber = "1111111111" });
+        context.SaveChanges();
+
+        var insertedPerson1 = context.People.Single(p => p.PersonId == 1);
+        insertedPerson1.PersonNumber = "1111111111";
+
+        context.SaveChanges();
+
+        var item = context.ChangeTracker.Entries().First(x => Object.ReferenceEquals(x.Entity, insertedPerson1));
+        item.OriginalValues["PersonNumber"] = "3333333333";
+
+        context.People.Add(new Person
+        { Name = "John Doe", PersonNumber = "3333333333", PhoneNumber = "1111111111" });
+
+        TestDelegate action = () => context.SaveChanges();
+        Assert.Throws<DbUpdateConcurrencyException>(action);
       }
     }
   }

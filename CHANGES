@@ -7,6 +7,7 @@
 - Fixed bug Fixed NullReferenceException (MySQL Bug #114457, Oracle Bug #36568102). Thanks to Maximilian Bienhüls for the contribution.
 - Fixed bug MySql.Data.OpenTelemetry dll has a version 0.0.0.0 (Oracle Bug #37198051).
 - Fixed bug Missing VersionInfo file in multiple projects (Oracle Bug #37240118).
+- Fixed bug ConcurrencyFix - Added back in RowCount checking (MySQL Bug #115853, Oracle Bug #36960454). Thanks to Ryan Kelly for the contribution.
 
 
 9.1.0
