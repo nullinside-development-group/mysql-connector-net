@@ -1,4 +1,4 @@
-// Copyright © 2024, Oracle and/or its affiliates.
+// Copyright Â© 2024, Oracle and/or its affiliates.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License, version 2.0, as
@@ -39,8 +39,8 @@ using System.Security;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Oracle Corporation")]
 [assembly: AssemblyProduct("MySQL Connector/NET")]
-[assembly: AssemblyCopyright("Copyright © 2023, 2025, Oracle and/or its affiliates.")]
-[assembly: AssemblyTrademark("Oracle®, Java, MySQL, and NetSuite are registered trademarks of Oracle and/or its affiliates.")]
+[assembly: AssemblyCopyright("Copyright Â© 2023, 2025, Oracle and/or its affiliates.")]
+[assembly: AssemblyTrademark("OracleÂ®, Java, MySQL, and NetSuite are registered trademarks of Oracle and/or its affiliates.")]
 [assembly: AssemblyCulture("")]
 [assembly: SecurityRules(SecurityRuleSet.Level1)]
 [assembly: CLSCompliant(false)]

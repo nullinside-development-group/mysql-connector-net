@@ -185,7 +185,7 @@ namespace MySql.Data.MySqlClient.Tests
     {
       using var cmd = Connection.CreateCommand();
       cmd.CommandText = "SELECT 1;";
-      using var _ = TestListener((activity) => Assert.AreEqual(BaseUserName+"0", activity.GetTagItem("db.user")));
+      using var _ = TestListener((activity) => Assert.That(BaseUserName+"0", Is.EqualTo(activity.GetTagItem("db.user"))));
       cmd.ExecuteNonQuery();
     }
     #endif
