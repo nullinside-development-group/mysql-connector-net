@@ -1,4 +1,4 @@
-// Copyright © 2013, 2024, Oracle and/or its affiliates.
+// Copyright © 2013, 2025, Oracle and/or its affiliates.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License, version 2.0, as
@@ -39,7 +39,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Oracle Corporation")]
 [assembly: AssemblyProduct("MySql.LoadBalancing.Tests")]
-[assembly: AssemblyCopyright("Copyright © 2013, 2024, Oracle and/or its affiliates.")]
+[assembly: AssemblyCopyright("Copyright © 2013, 2025, Oracle and/or its affiliates.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

@@ -1,4 +1,4 @@
-// Copyright © 2008, 2024, Oracle and/or its affiliates.
+// Copyright © 2008, 2025, Oracle and/or its affiliates.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License, version 2.0, as
@@ -38,7 +38,7 @@ using NUnit.Framework;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Oracle")]
 [assembly: AssemblyProduct("MySql.Data.EntityFramework.Tests")]
-[assembly: AssemblyCopyright("Copyright © 2008, 2024, Oracle and/or its affiliates.")]
+[assembly: AssemblyCopyright("Copyright © 2008, 2025, Oracle and/or its affiliates.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
