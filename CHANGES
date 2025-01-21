@@ -1,4 +1,5 @@
 9.3.0
+- Fixed bug MySql.EntityFrameworkCore.dll in NuGet packages is not signed (Oracle Bug #37503859).
 
 
 9.2.0
