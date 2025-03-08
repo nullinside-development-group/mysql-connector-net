@@ -652,7 +652,11 @@ namespace Mysqlx.Expr
 #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
+      if ((tag & 7) == 4) {
+        // Abort on any end group tag.
+        return;
+      }
+      switch(tag) {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
@@ -723,6 +727,11 @@ namespace Mysqlx.Expr
       uint tag;
       while ((tag = input.ReadTag()) != 0)
       {
+        if ((tag & 7) == 4)
+        {
+          // Abort on any end group tag.
+          return;
+        }
         switch (tag)
         {
           default:
@@ -1082,7 +1091,11 @@ namespace Mysqlx.Expr
 #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
+      if ((tag & 7) == 4) {
+        // Abort on any end group tag.
+        return;
+      }
+      switch(tag) {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
@@ -1107,6 +1120,11 @@ namespace Mysqlx.Expr
       uint tag;
       while ((tag = input.ReadTag()) != 0)
       {
+        if ((tag & 7) == 4)
+        {
+          // Abort on any end group tag.
+          return;
+        }
         switch (tag)
         {
           default:
@@ -1445,7 +1463,11 @@ namespace Mysqlx.Expr
 #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
+      if ((tag & 7) == 4) {
+        // Abort on any end group tag.
+        return;
+      }
+      switch(tag) {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
@@ -1474,6 +1496,11 @@ namespace Mysqlx.Expr
       uint tag;
       while ((tag = input.ReadTag()) != 0)
       {
+        if ((tag & 7) == 4)
+        {
+          // Abort on any end group tag.
+          return;
+        }
         switch (tag)
         {
           default:
@@ -1540,7 +1567,7 @@ namespace Mysqlx.Expr
   ///
   ///for table: col\@doc_path, tbl.col\@doc_path col, tbl.col, schema.tbl.col
   ///for document collection: doc_path
-  /////
+  ///&#x2F;/
   ///@par production list
   ///@code{unparsed}
   ///col_identifier: string "." string "." string |
@@ -1884,7 +1911,11 @@ namespace Mysqlx.Expr
 #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
+      if ((tag & 7) == 4) {
+        // Abort on any end group tag.
+        return;
+      }
+      switch(tag) {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
@@ -1917,6 +1948,11 @@ namespace Mysqlx.Expr
       uint tag;
       while ((tag = input.ReadTag()) != 0)
       {
+        if ((tag & 7) == 4)
+        {
+          // Abort on any end group tag.
+          return;
+        }
         switch (tag)
         {
           default:
@@ -2168,7 +2204,11 @@ namespace Mysqlx.Expr
 #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
+      if ((tag & 7) == 4) {
+        // Abort on any end group tag.
+        return;
+      }
+      switch(tag) {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
@@ -2196,6 +2236,11 @@ namespace Mysqlx.Expr
       uint tag;
       while ((tag = input.ReadTag()) != 0)
       {
+        if ((tag & 7) == 4)
+        {
+          // Abort on any end group tag.
+          return;
+        }
         switch (tag)
         {
           default:
@@ -2444,7 +2489,11 @@ namespace Mysqlx.Expr
 #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
+      if ((tag & 7) == 4) {
+        // Abort on any end group tag.
+        return;
+      }
+      switch(tag) {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
@@ -2469,6 +2518,11 @@ namespace Mysqlx.Expr
       uint tag;
       while ((tag = input.ReadTag()) != 0)
       {
+        if ((tag & 7) == 4)
+        {
+          // Abort on any end group tag.
+          return;
+        }
         switch (tag)
         {
           default:
@@ -2664,7 +2718,11 @@ namespace Mysqlx.Expr
 #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
+      if ((tag & 7) == 4) {
+        // Abort on any end group tag.
+        return;
+      }
+      switch(tag) {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
@@ -2685,6 +2743,11 @@ namespace Mysqlx.Expr
       uint tag;
       while ((tag = input.ReadTag()) != 0)
       {
+        if ((tag & 7) == 4)
+        {
+          // Abort on any end group tag.
+          return;
+        }
         switch (tag)
         {
           default:
@@ -2947,7 +3010,11 @@ namespace Mysqlx.Expr
 #else
           uint tag;
           while ((tag = input.ReadTag()) != 0) {
-            switch(tag) {
+          if ((tag & 7) == 4) {
+            // Abort on any end group tag.
+            return;
+          }
+          switch(tag) {
               default:
                 _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
                 break;
@@ -2975,6 +3042,11 @@ namespace Mysqlx.Expr
           uint tag;
           while ((tag = input.ReadTag()) != 0)
           {
+            if ((tag & 7) == 4)
+            {
+              // Abort on any end group tag.
+              return;
+            }
             switch (tag)
             {
               default:
@@ -3179,7 +3251,11 @@ namespace Mysqlx.Expr
 #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
+      if ((tag & 7) == 4) {
+        // Abort on any end group tag.
+        return;
+      }
+      switch(tag) {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
@@ -3200,6 +3276,11 @@ namespace Mysqlx.Expr
       uint tag;
       while ((tag = input.ReadTag()) != 0)
       {
+        if ((tag & 7) == 4)
+        {
+          // Abort on any end group tag.
+          return;
+        }
         switch (tag)
         {
           default:
@@ -3222,3 +3303,4 @@ namespace Mysqlx.Expr
 }
 
 #endregion Designer generated code
+
