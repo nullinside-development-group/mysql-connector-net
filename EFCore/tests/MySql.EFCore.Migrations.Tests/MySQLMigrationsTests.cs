@@ -32,7 +32,6 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.DependencyInjection;
 using MySql.EntityFrameworkCore.Basic.Tests.Utils;
 using NUnit.Framework;
-using NUnit.Framework.Legacy;
 
 namespace MySql.EntityFrameworkCore.Migrations.Tests
 {
@@ -50,6 +49,24 @@ namespace MySql.EntityFrameworkCore.Migrations.Tests
         var migrator = mytestContext.GetInfrastructure().GetRequiredService<IMigrator>();
 
         migrator.GenerateScript(fromMigration: Migration.InitialDatabase, toMigration: Migration.InitialDatabase);
+      }
+    }
+
+    //Bug #37513445 Cannot Perform Database Migration using MySql.EntityFrameworkCore 9.0.0
+    [Test]
+    public void TryPerformMigration()
+    {
+      var optionsBuilder = new DbContextOptionsBuilder();
+      optionsBuilder.UseMySQL(MySQLTestStore.RootConnectionString + "database=test;");
+
+      using (var mytestContext = new MyTestContext(optionsBuilder.Options))
+      {
+        mytestContext.Database.EnsureCreated();
+        mytestContext.Database.EnsureDeleted();
+        mytestContext.Database.Migrate();
+
+        Assert.That(mytestContext.Database.CanConnect(), Is.True);
+        mytestContext.Database.EnsureDeleted();
       }
     }
   }

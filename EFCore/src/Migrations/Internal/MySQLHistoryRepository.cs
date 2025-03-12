@@ -61,10 +61,10 @@ namespace MySql.EntityFrameworkCore.Migrations.Internal
       Dependencies.MigrationsLogger.AcquiringMigrationLock();
 
       var dbLock = CreateMigrationDatabaseLock();
-      int result;
+      Int64 result;
       try
       {
-        result = (int)CreateGetLockCommand().ExecuteScalar(CreateRelationalCommandParameters())!;
+        result = (Int64)CreateGetLockCommand().ExecuteScalar(CreateRelationalCommandParameters())!;
       }
       catch
       {
@@ -120,11 +120,11 @@ namespace MySql.EntityFrameworkCore.Migrations.Internal
     }
 
     private IRelationalCommand CreateGetLockCommand()
-        => Dependencies.RawSqlCommandBuilder.Build("DECLARE @result int;EXEC @result = sp_getapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session', @LockMode = 'Exclusive';SELECT @result", []).RelationalCommand;
+        => Dependencies.RawSqlCommandBuilder.Build("SELECT GET_LOCK('__EFMigrationsLock',-1);", []).RelationalCommand;
 
     private MySQLMigrationDatabaseLock CreateMigrationDatabaseLock()
     => new(
-        Dependencies.RawSqlCommandBuilder.Build("DECLARE @result int;EXEC @result = sp_releaseapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session';SELECT @result"),
+        Dependencies.RawSqlCommandBuilder.Build("SELECT RELEASE_LOCK('__EFMigrationsLock');"),
         CreateRelationalCommandParameters(),
         this);
 

@@ -2,6 +2,7 @@
 - Fixed bug MySql.EntityFrameworkCore.dll in NuGet packages is not signed (Oracle Bug #37503859).
 - Fixed some tests due to incorrect implementation (WL16033).
 - Updated third party dependencies (WL16852).
+- Fixed bug Cannot Perform Database Migration using MySql.EntityFrameworkCore 9.0.0 (MySQL Bug #117258, Oracle Bug #37513445).
 
 
 9.2.0
