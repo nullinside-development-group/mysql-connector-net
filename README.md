@@ -24,6 +24,8 @@ From MySQL Connector/NET 9.2, the driver adds support for [.NET 9](https://learn
 
 From MySQL Connector/NET 9.2, the driver removes support for .NET 6 and EF Core 6.
 
+From MySQL Connector/NET 9.3, the driver adds fixes to test suite and support for newest versions of EF Core 8 and EF Core 9.
+
 For detailed information please visit the official [MySQL Connector/NET documentation](https://dev.mysql.com/doc/connector-net/en/).
 
 ## Licensing
