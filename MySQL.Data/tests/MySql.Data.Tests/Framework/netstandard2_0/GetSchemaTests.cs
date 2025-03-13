@@ -764,7 +764,10 @@ namespace MySql.Data.MySqlClient.Tests
         {
           Assert.That(reader.Read(), "Matching the values");
           Assert.That(reader.GetInt32(0).Equals(1000), "Matching the values");
-          Assert.That(reader.GetDouble(1).Equals(990.196078431), "Matching the values");
+          if (Version >= new Version(9, 3, 0))
+            Assert.That(reader.GetDouble(1).Equals(990.1961), "Matching the values");
+          else
+            Assert.That(reader.GetDouble(1).Equals(990.196078431), "Matching the values");
           Assert.That(reader.GetInt64(2).Equals(10000000), "Matching the values");
         }
 
