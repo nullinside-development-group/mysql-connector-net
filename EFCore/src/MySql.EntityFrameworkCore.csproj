@@ -6,13 +6,13 @@
     <Authors>Oracle</Authors>
     <PackageTags>MySql;.NET Connector;MySql Entity Framework Core;netcore;.Net Core;MySql Conector/Net Entity Framework Core;coreclr;C/NET;C/Net Core</PackageTags>
     <PackageIconUrl>http://www.mysql.com/common/logos/logo-mysql-170x115.png</PackageIconUrl>
-    <PackageProjectUrl>https://github.com/mysql/mysql-connector-net</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/nullinside-development-group/mysql-connector-net</PackageProjectUrl>
     <PackageLicenseExpression>GPL-2.0-only WITH Universal-FOSS-exception-1.0</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <LangVersion>13.0</LangVersion>
     <TargetFrameworks>net9.0;net8.0;</TargetFrameworks>
     <AssemblyName>MySql.EntityFrameworkCore</AssemblyName>
-    <PackageId>MySql.EntityFrameworkCore</PackageId>
+    <PackageId>Nullinside.MySql.EntityFrameworkCore</PackageId>
     <Nullable>enable</Nullable>
     <SignAssembly>True</SignAssembly>
     <DelaySign>True</DelaySign>
@@ -20,6 +20,8 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);CS1591;EF1001;EF9100</NoWarn>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Version>9.0.3</Version>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   
   <PropertyGroup Condition="'$(allow_prerelease)'=='true'">
